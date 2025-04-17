@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatBot - UI Basic</title>
+</head>
+<body>
+    <h2>Register</h2>
+    <input type="text" id="reg-username" placeholder="Username">
+    <input type="password" id="reg-password" placeholder="Password">
+    <button onclick="register()">Register</button>
+
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+
+    <div id="chat-box" style="display:none;">
+        <h2>Chat with Bot</h2>
+        <div id="messages" style="border:1px solid #ccc; padding:10px; height:300px; overflow-y:scroll;"></div>
+        <input type="text" id="message" placeholder="Enter message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        let accessToken = ""
+
+        async function register() {
+            const username = document.getElementById("reg-username").value;
+            const password = document.getElementById("reg-password").value;
+
+            const res = await fetch("https://apichatbot-nqg3.onrender.com/auth/register", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username, password})
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert("Register success! Please login.");
+            } else {
+                alert(data.detail || "Register failed");
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch("https://apichatbot-nqg3.onrender.com/auth/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({username, password})
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                accessToken = data.access_token;
+                alert("Login success!");
+                document.getElementById("chat-box").style.display = "block";
+            } else {
+                alert(data.detail || "Login failed");
+            }
+        }
+
+        async function sendMessage() {
+            const msg = document.getElementById("message").value;
+            if (!msg) return;
+
+            const res = await fetch("https://apichatbot-nqg3.onrender.com/chat/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({message: msg})
+            });
+
+            const data = await res.json();
+            const box = document.getElementById("messages");
+            box.innerHTML += `<p><b>You:</b> ${msg}</p>`;
+            box.innerHTML += `<p><b>Bot:</b> ${data.response}</p>`;
+            document.getElementById("message").value = "";
+            box.scrollTop = box.scrollHeight;
+        }
+    </script>
+</body>
+</html>
