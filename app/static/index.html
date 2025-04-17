@@ -79,20 +79,7 @@
             const data = await res.json();
             const box = document.getElementById("messages");
             box.innerHTML += `<p><b>You:</b> ${msg}</p>`;
-
-            // Kiểm tra và hiển thị các trường từ ChatResponse
-            if (data.disease_name && data.confidence && data.recommendation) {
-                box.innerHTML += `
-                    <p><b>Bot:</b></p>
-                    <p><b>Disease Name:</b> ${data.disease_name}</p>
-                    <p><b>Confidence:</b> ${data.confidence}</p>
-                    <p><b>Recommendation:</b> ${data.recommendation}</p>
-                `;
-            } else {
-                // Nếu không có dữ liệu trả về từ bot
-                box.innerHTML += `<p><b>Bot:</b> ${data.response || "No response from bot"}</p>`;
-            }
-            
+            box.innerHTML += `<p><b>Bot:</b> ${data.response}</p>`;
             document.getElementById("message").value = "";
             box.scrollTop = box.scrollHeight;
         }

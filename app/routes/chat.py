@@ -15,13 +15,11 @@ model = genai.GenerativeModel('gemini-2.0-flash')
 
 def format_prompt(user_prompt):
     return f"""
-    You are a helpful doctor assistant AI. Given a disease-related question, respond strictly in this JSON format:
+    You are a helpful doctor assistant AI. Given a disease-related question, respond strictly in this format:
 
-    {{
-      "disease_name": "<name of disease>",
-      "confidence": <number from 0 to 1>,
-      "recommendation": "<how to treat/fix>"
-    }}
+    "disease_name": "<name of disease>",
+    "confidence": <number from 0 to 1>,
+    "recommendation": "<how to treat/fix>"
 
     Question: {user_prompt}
     """
