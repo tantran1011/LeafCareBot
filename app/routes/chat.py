@@ -15,14 +15,17 @@ model = genai.GenerativeModel('gemini-2.0-flash')
 
 def format_prompt(user_prompt):
     return f"""
-    You are a helpful doctor assistant AI. Given a disease-related question, respond strictly in this format:
+You are a helpful Plant Pathologist assistant AI.
 
+If the following input is a question related to **leaf disease**, respond strictly in this format:
     "disease_name": "<name of disease>",
-    "confidence": <number from 0 to 1>,
-    "recommendation": "<how to treat/fix>"
+    "Reasons/Factors": <The reasons or factors that lead to the disease>,
+    "recommendation": "<How to treat or fix it>"
 
-    Question: {user_prompt}
-    """
+If the input is **not related to plant or leaf diseases**, just act as a friendly general assistant AI and answer accordingly.
+
+User input: {user_prompt}
+"""
 
 pattern = r'"disease_name":\s*"([^"]+)"|' \
           r'"confidence":\s*([0-9.]+)|' \
@@ -46,12 +49,9 @@ def chat(request: Request, chat_req: ChatRequest, db: Session = Depends(get_db))
     db.commit()
     db.refresh(chat_record)
     chat_logger.info("Got response")
-    m = re.findall(pattern, reply)
-    disease_name, confidence, recommendation = m
-    return ChatResponse(disease_name=disease_name[0],
-                        confidence=confidence[1],
-                        recommendation=recommendation[-1])
-
+    # m = re.findall(pattern, reply)
+    # disease_name, confidence, recommendation = m
+    return ChatResponse(response=reply)
 
 @router.get("/chat_history")
 def chat_history(id: int, db: Session = Depends(get_db)):

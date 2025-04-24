@@ -15,6 +15,4 @@ class ChatRequest(BaseModel):
     message: str 
 
 class ChatResponse(BaseModel):
-    disease_name: str
-    confidence: str 
-    recommendation: str
+    response: str
