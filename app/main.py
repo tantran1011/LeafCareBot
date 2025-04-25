@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from app.routes import auth, chat
+from app.routes import auth, chat, diagnosis
 import os
 from dotenv import load_dotenv
 from starlette.middleware.sessions import SessionMiddleware
@@ -17,6 +17,7 @@ app.middleware("http")(log_request_time)
 
 app.include_router(auth.router, prefix='/auth')
 app.include_router(chat.router, prefix='/chat')
+app.include_router(diagnosis.router, prefix="/diagnosis")
 
 @app.get('/')
 def home():

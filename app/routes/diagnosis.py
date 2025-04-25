@@ -1,16 +1,21 @@
+import os
 import google.generativeai as genai
-from fastapi import APIRouter, HTTPException, Depends, Request
-from app.models.user import ChatRequest, ChatResponse
-from app.models.database import ChatHistory, User
 from app.config import get_db
-from app.core.logger import chat_logger
+from app.utils.image_upload import img2cloud
+from fastapi import APIRouter, UploadFile, File, Request, Depends, HTTPException
 from sqlalchemy.orm import Session
-import os 
-from dotenv import load_dotenv 
+from app.services.inferences import predict_plant_disease
+from app.models.database import ChatHistory, User
+from app.models.user import ChatResponse
+from dotenv import load_dotenv
+from app.core.logger import chat_logger 
 
 load_dotenv()
 genai.configure(api_key=os.getenv("CHATBOT_API_KEY"))
 model = genai.GenerativeModel('gemini-2.0-flash')
+
+router = APIRouter()
+
 
 def format_prompt(user_prompt):
     return f"""
@@ -26,24 +31,21 @@ If the input is **not related to plant or leaf diseases**, just act as a friendl
 User input: {user_prompt}
 """
 
-# pattern = r'"disease_name":\s*"([^"]+)"|' \
-#           r'"confidence":\s*([0-9.]+)|' \
-#           r'"recommendation":\s*"([^"]+)"'
 
-router = APIRouter()
-
-@router.post('/chatbot', response_model=ChatResponse)
-def chat(request: Request, chat_req: ChatRequest, db: Session = Depends(get_db)):
-    
+@router.post('/diagnosis_plant', response_model=ChatResponse)
+def diagnosis_plant(request: Request, file: UploadFile = File(), db: Session = Depends(get_db)):
     user_id = request.session.get("user_id")
 
     if not user_id: 
         raise HTTPException(status_code=401, detail="User not login")
+    
+    secure_url = img2cloud(file, user_id)
+    diagnosis = predict_plant_disease(secure_url)
 
-    response = model.generate_content(format_prompt(chat_req.message))
+    response = model.generate_content(format_prompt(diagnosis))
     reply = response.text
 
-    chat_record = ChatHistory(user_id=user_id, question=chat_req.message, response=reply)
+    chat_record = ChatHistory(user_id=user_id, question=diagnosis, image_url=secure_url ,response=reply)
     db.add(chat_record)
     db.commit()
     db.refresh(chat_record)
@@ -51,12 +53,20 @@ def chat(request: Request, chat_req: ChatRequest, db: Session = Depends(get_db))
     return ChatResponse(response=reply)
 
 
-@router.get("/chat_history")
-def chat_history(id: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == id).first()
+@router.get('/plant_information')
+def plant_information(id: int, db: Session = Depends(get_db)):
+    user = db.query(ChatHistory).filter(User.id == id).first()
     if user:
         history = db.query(ChatHistory).filter(ChatHistory.user_id == id).all()
         if not history:
             return {"User": user.username,"Message": "Nothing recorded"}
-        return {"User": user.username, "Chat History" : history}
+        return {"Image": history.image_url, "Diagnosis" : history.question}
     raise HTTPException(status_code=401, detail="User not found")
+
+
+    
+
+
+    
+
+    
