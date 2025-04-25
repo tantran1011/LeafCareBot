@@ -12,20 +12,6 @@ load_dotenv()
 genai.configure(api_key=os.getenv("CHATBOT_API_KEY"))
 model = genai.GenerativeModel('gemini-2.0-flash')
 
-def format_prompt(user_prompt):
-    return f"""
-You are a helpful Plant Pathologist assistant AI.
-
-If the following input is a question related to **leaf disease**, respond strictly in this format:
-    "disease_name": "<name of disease>",
-    "Reasons/Factors": <The reasons or factors that lead to the disease>,
-    "recommendation": "<How to treat or fix it>"
-
-If the input is **not related to plant or leaf diseases**, just act as a friendly general assistant AI and answer accordingly.
-
-User input: {user_prompt}
-"""
-
 # pattern = r'"disease_name":\s*"([^"]+)"|' \
 #           r'"confidence":\s*([0-9.]+)|' \
 #           r'"recommendation":\s*"([^"]+)"'
@@ -40,7 +26,7 @@ def chat(request: Request, chat_req: ChatRequest, db: Session = Depends(get_db))
     if not user_id: 
         raise HTTPException(status_code=401, detail="User not login")
 
-    response = model.generate_content(format_prompt(chat_req.message))
+    response = model.generate_content(chat_req.message)
     reply = response.text
 
     chat_record = ChatHistory(user_id=user_id, question=chat_req.message, response=reply)
