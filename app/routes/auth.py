@@ -31,7 +31,7 @@ def login(request: Request, user: Login, db: Session = Depends(get_db)):
         auth_logger.warning("Invalid Password")
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    auth_logger.info(f"{user.username} Sucessfull Login")
+    auth_logger.info(f"{db_user.username} Sucessfull Login")
     request.session["user_id"] = db_user.id
     return UserRespone(username=db_user.username)
 
