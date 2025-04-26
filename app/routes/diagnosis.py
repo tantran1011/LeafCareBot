@@ -58,7 +58,7 @@ def diagnosis_plant(request: Request, file: UploadFile = File(), db: Session = D
 def plant_information(id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == id).first()
     if user:
-        history = db.query(ChatHistory).filter(ChatHistory.user_id == id).all()
+        history = db.query(ChatHistory).filter(ChatHistory.user_id == id).last()
         if not history:
             return {"User": user.username,"Message": "Nothing recorded"}
         return {"Image": history.image_url, "Diagnosis" : history.question}
