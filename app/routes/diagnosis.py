@@ -56,7 +56,7 @@ def diagnosis_plant(request: Request, file: UploadFile = File(), db: Session = D
 
 @router.get('/plant_information')
 def plant_information(id: int, db: Session = Depends(get_db)):
-    user = db.query(ChatHistory).filter(User.id == id).first()
+    user = db.query(User).filter(User.id == id).first()
     if user:
         history = db.query(ChatHistory).filter(ChatHistory.user_id == id).all()
         if not history:
