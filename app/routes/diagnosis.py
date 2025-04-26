@@ -40,8 +40,9 @@ def diagnosis_plant(request: Request, file: UploadFile = File(), db: Session = D
         raise HTTPException(status_code=401, detail="User not login")
     
     secure_url = img2cloud(file, user_id)
+    print(secure_url)
     diagnosis = predict_plant_disease(secure_url)
-
+    print(diagnosis)
     response = model.generate_content(format_prompt(diagnosis))
     reply = response.text
 
