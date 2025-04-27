@@ -84,7 +84,7 @@
 
         async function sendChat() {
             const chatInput = document.getElementById("chatInput").value;
-            const response = await fetch(`${apiUrl}/chat.cahtbot`, {
+            const response = await fetch(`${apiUrl}/chat.chatbot`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ text: chatInput }),
