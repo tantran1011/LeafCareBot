@@ -2,232 +2,132 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>LeafCareBot - PRO Client</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <title>LeafCareBot</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0fff4;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #2f855a;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .tab {
-            background: #48bb78;
-            color: white;
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background 0.3s;
-            display: flex;
-            align-items: center;
-        }
-        .tab:hover, .tab.active {
-            background: #38a169;
-        }
-        .tab i {
-            margin-right: 8px;
-        }
-        .tab-content {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-            animation: fadeIn 0.5s;
-            max-width: 600px;
-            margin: auto;
-        }
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 1;}
-        }
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-        input[type="text"], input[type="password"], input[type="file"] {
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #c6f6d5;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #48bb78;
-            color: white;
-            padding: 10px;
-            border: none;
-            margin-top: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #38a169;
-        }
-        #chatResult, #uploadResult {
-            background: #edf2f7;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-            white-space: pre-wrap;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .tab { display: none; }
+        .tab.active { display: block; }
+        button { margin: 5px; padding: 10px 20px; }
+        input, textarea { width: 300px; margin: 5px 0; padding: 8px; }
+        .response { margin-top: 10px; padding: 10px; border: 1px solid #ccc; background-color: #f7f7f7; }
     </style>
 </head>
 <body>
+    <h1>🌿 LeafCareBot</h1>
 
-<h1>LeafCareBot - Chăm sóc cây trồng</h1>
+    <div id="auth-tab" class="tab active">
+        <h2>Đăng ký / Đăng nhập</h2>
+        <input type="text" id="username" placeholder="Username"><br>
+        <input type="password" id="password" placeholder="Password"><br>
+        <button onclick="registerUser()">Đăng ký</button>
+        <button onclick="loginUser()">Đăng nhập</button>
+    </div>
 
-<div class="tabs">
-    <div class="tab active" onclick="showTab('register')"><i class="fas fa-user-plus"></i> Đăng ký</div>
-    <div class="tab" onclick="showTab('login')"><i class="fas fa-sign-in-alt"></i> Đăng nhập</div>
-    <div class="tab" onclick="showTab('chat')"><i class="fas fa-comments"></i> Chat</div>
-    <div class="tab" onclick="showTab('upload')"><i class="fas fa-leaf"></i> Chẩn đoán</div>
-</div>
+    <div id="chat-tab" class="tab">
+        <h2>Chat với LeafCareBot</h2>
+        <textarea id="chatInput" placeholder="Nhập câu hỏi của bạn..."></textarea><br>
+        <button onclick="sendChat()">Gửi Chat</button>
+        <div id="chatResponse" class="response"></div>
+    </div>
 
-<div id="register" class="tab-content">
-    <h2>Đăng ký tài khoản</h2>
-    <form id="registerForm">
-        <input type="text" id="regUsername" placeholder="Tên đăng nhập" required>
-        <input type="password" id="regPassword" placeholder="Mật khẩu" required>
-        <button type="submit">Đăng ký</button>
-    </form>
-</div>
+    <div id="diagnosis-tab" class="tab">
+        <h2>Chẩn đoán bệnh cho cây</h2>
+        <input type="file" id="imageInput"><br>
+        <button onclick="sendDiagnosis()">Gửi Ảnh</button>
+        <div id="diagnosisResponse" class="response"></div>
+    </div>
 
-<div id="login" class="tab-content" style="display:none">
-    <h2>Đăng nhập</h2>
-    <form id="loginForm">
-        <input type="text" id="loginUsername" placeholder="Tên đăng nhập" required>
-        <input type="password" id="loginPassword" placeholder="Mật khẩu" required>
-        <button type="submit">Đăng nhập</button>
-    </form>
-</div>
+    <script>
+        const apiUrl = "https://leafcarebot.onrender.com";
 
-<div id="chat" class="tab-content" style="display:none">
-    <h2>Chat với LeafCareBot</h2>
-    <form id="chatForm">
-        <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." required>
-        <button type="submit">Gửi tin nhắn</button>
-    </form>
-    <div id="chatResult"></div>
-</div>
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+        }
 
-<div id="upload" class="tab-content" style="display:none">
-    <h2>Chẩn đoán bệnh cây</h2>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="plantImage" accept="image/*" required>
-        <button type="submit">Upload ảnh</button>
-    </form>
-    <div id="uploadResult"></div>
-</div>
+        async function registerUser() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const response = await fetch(`${apiUrl}/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+                credentials: 'include'
+            });
 
-<script>
-let token = ""; 
-const baseUrl = "https://leafcarebot.onrender.com";
+            const data = await response.json();
+            if (response.ok) {
+                alert(`Đăng ký thành công cho ${data.username}`);
+            } else {
+                alert(data.detail || "Đăng ký thất bại!");
+            }
+        }
 
-// Tab switching
-function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.getElementById(tabId).style.display = 'block';
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    event.target.closest('.tab').classList.add('active');
-}
+        async function loginUser() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const response = await fetch(`${apiUrl}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+                credentials: 'include'
+            });
 
-// Đăng ký
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('regUsername').value;
-    const password = document.getElementById('regPassword').value;
+            const data = await response.json();
+            if (response.ok) {
+                alert(`Đăng nhập thành công: ${data.username}`);
+                showTab('chat');
+            } else {
+                alert(data.detail || "Đăng nhập thất bại!");
+            }
+        }
 
-    const res = await fetch(`${baseUrl}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-    });
+        async function sendChat() {
+            const chatInput = document.getElementById("chatInput").value;
+            const response = await fetch(`${apiUrl}/chat.cahtbot`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: chatInput }),
+                credentials: 'include'
+            });
 
-    const data = await res.json();
-    alert(`Đăng ký: ${data.message || JSON.stringify(data)}`);
-});
+            const data = await response.json();
+            if (response.ok) {
+                document.getElementById("chatResponse").innerText = data.response;
+            } else {
+                alert(data.detail || "Bạn cần đăng nhập để chat!");
+                showTab('auth');
+            }
+        }
 
-// Đăng nhập
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
+        async function sendDiagnosis() {
+            const fileInput = document.getElementById("imageInput").files[0];
+            if (!fileInput) {
+                alert("Vui lòng chọn ảnh!");
+                return;
+            }
 
-    const res = await fetch(`${baseUrl}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-    });
+            const formData = new FormData();
+            formData.append("file", fileInput);
 
-    const data = await res.json();
-    if (data.access_token) {
-        token = data.access_token;
-        alert("Đăng nhập thành công!");
-        showTab('chat');
-    } else {
-        alert(`Đăng nhập thất bại: ${JSON.stringify(data)}`);
-    }
-});
+            const response = await fetch(`${apiUrl}/diagnosis/diagnosis_plant`, {
+                method: "POST",
+                body: formData,
+                credentials: 'include'
+            });
 
-// Chat
-document.getElementById('chatForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!token) {
-        alert("Bạn cần đăng nhập trước!");
-        return;
-    }
-
-    const message = document.getElementById('chatInput').value;
-
-    const res = await fetch(`${baseUrl}/chat.chatbot`, {
-        method: "POST",
-        headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ message })
-    });
-
-    const data = await res.json();
-    document.getElementById('chatResult').innerText = `Bot: ${data.response || "Không nhận được phản hồi"}`;
-});
-
-// Upload ảnh
-document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!token) {
-        alert("Bạn cần đăng nhập trước!");
-        return;
-    }
-
-    const fileInput = document.getElementById('plantImage');
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-
-    const res = await fetch(`${baseUrl}/diagnosis/diagnosis_plant`, {
-        method: "POST",
-        headers: { 
-            "Authorization": `Bearer ${token}`
-        },
-        body: formData
-    });
-
-    const data = await res.json();
-    const resultText = data.result ? `Chẩn đoán: ${data.result}` : "Không nhận được kết quả";
-    document.getElementById('uploadResult').innerText = resultText;
-});
-</script>
-
+            const data = await response.json();
+            if (response.ok) {
+                let output = `
+                    📋 <strong>Dự đoán:</strong> ${data.predicted_class}<br>
+                    💬 <strong>Khuyến nghị:</strong> ${data.recommendations.join("<br>")}
+                `;
+                document.getElementById("diagnosisResponse").innerHTML = output;
+            } else {
+                alert(data.detail || "Bạn cần đăng nhập để chẩn đoán!");
+                showTab('auth');
+            }
+        }
+    </script>
 </body>
 </html>
