@@ -1,243 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>LeafCareBot</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #e8f5e9;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        h2 {
-            text-align: center;
-            color: #2e7d32;
-        }
-        input, button, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-        button {
-            background-color: #66bb6a;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #4caf50;
-        }
-        .hidden {
-            display: none;
-        }
-        .chatbox {
-            max-height: 300px;
-            overflow-y: auto;
-            background-color: #f1f8e9;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .message {
-            margin: 8px 0;
-            padding: 8px 12px;
-            border-radius: 10px;
-            max-width: 70%;
-            clear: both;
-        }
-        .user-message {
-            background-color: #c8e6c9;
-            float: right;
-            text-align: right;
-        }
-        .bot-message {
-            background-color: #ffffff;
-            float: left;
-            text-align: left;
-        }
-        .diagnosis-result {
-            text-align: center;
-        }
-        .diagnosis-img {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        nav button {
-            width: auto;
-            margin: 0 5px;
-            padding: 8px 16px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>LeafCareBot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e8f5e9;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 400px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2e7d32;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #66bb6a;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4caf50;
+    }
+    .hidden {
+      display: none;
+    }
+    .chatbox {
+      max-height: 300px;
+      overflow-y: auto;
+      background-color: #f1f8e9;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin: 8px 0;
+      padding: 8px 12px;
+      border-radius: 10px;
+      max-width: 70%;
+      clear: both;
+    }
+    .user-message {
+      background-color: #c8e6c9;
+      float: right;
+      text-align: right;
+    }
+    .bot-message {
+      background-color: #ffffff;
+      float: left;
+      text-align: left;
+    }
+    .diagnosis-result {
+      text-align: center;
+    }
+    .diagnosis-img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    nav button {
+      width: auto;
+      margin: 0 5px;
+      padding: 8px 16px;
+    }
+    .link {
+      text-align: center;
+      color: #388e3c;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🌿 LeafCareBot</h2>
+  <h2>🌿 LeafCareBot</h2>
 
-    <nav>
-        <button onclick="showTab('auth')">Login/Register</button>
-        <button onclick="showTab('chat')" id="chatTab" disabled>Chat</button>
-        <button onclick="showTab('diagnosis')" id="diagnosisTab" disabled>Diagnosis</button>
-    </nav>
+  <nav>
+    <button onclick="showTab('login')">Login</button>
+    <button onclick="showTab('chat')" id="chatTab" disabled>Chat</button>
+    <button onclick="showTab('diagnosis')" id="diagnosisTab" disabled>Diagnosis</button>
+  </nav>
 
-    <!-- Auth -->
-    <div id="auth">
-        <h3>Login</h3>
-        <input type="text" id="loginUsername" placeholder="Username">
-        <input type="password" id="loginPassword" placeholder="Password">
-        <button onclick="login()">Login</button>
+  <!-- Login -->
+  <div id="login">
+    <h3>Login</h3>
+    <input type="text" id="loginUsername" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div class="link" onclick="switchToRegister()">Chưa có tài khoản? Đăng ký</div>
+  </div>
 
-        <h3>Register</h3>
-        <input type="text" id="registerUsername" placeholder="Username">
-        <input type="password" id="registerPassword" placeholder="Password">
-        <button onclick="register()">Register</button>
-    </div>
+  <!-- Register -->
+  <div id="register" class="hidden">
+    <h3>Register</h3>
+    <input type="text" id="registerUsername" placeholder="Username">
+    <input type="password" id="registerPassword" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <div class="link" onclick="switchToLogin()">Đã có tài khoản? Đăng nhập</div>
+  </div>
 
-    <!-- Chat -->
-    <div id="chat" class="hidden">
-        <div class="chatbox" id="chatBox"></div>
-        <input type="text" id="chatInput" placeholder="Type your message...">
-        <button onclick="sendChat()">Send</button>
-    </div>
+  <!-- Chat -->
+  <div id="chat" class="hidden">
+    <div class="chatbox" id="chatBox"></div>
+    <input type="text" id="chatInput" placeholder="Type your message...">
+    <button onclick="sendChat()">Send</button>
+  </div>
 
-    <!-- Diagnosis -->
-    <div id="diagnosis" class="hidden">
-        <input type="file" id="imageInput" accept="image/*">
-        <button onclick="sendDiagnosis()">Upload & Diagnose</button>
-        <div class="diagnosis-result" id="diagnosisResult"></div>
-    </div>
+  <!-- Diagnosis -->
+  <div id="diagnosis" class="hidden">
+    <input type="file" id="imageInput" accept="image/*">
+    <button onclick="sendDiagnosis()">Upload & Diagnose</button>
+    <div class="diagnosis-result" id="diagnosisResult"></div>
+  </div>
 </div>
 
 <script>
 const apiUrl = 'https://leafcarebot.onrender.com'; // 💬 Update nếu đổi backend url
 
 function showTab(tab) {
-    document.getElementById('auth').classList.add('hidden');
-    document.getElementById('chat').classList.add('hidden');
-    document.getElementById('diagnosis').classList.add('hidden');
-    document.getElementById(tab).classList.remove('hidden');
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('register').classList.add('hidden');
+  document.getElementById('chat').classList.add('hidden');
+  document.getElementById('diagnosis').classList.add('hidden');
+  document.getElementById(tab).classList.remove('hidden');
+}
+
+function switchToRegister() {
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('register').classList.remove('hidden');
+}
+
+function switchToLogin() {
+  document.getElementById('register').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
 }
 
 async function login() {
-    const username = document.getElementById("loginUsername").value;
-    const password = document.getElementById("loginPassword").value;
-    const response = await fetch(`${apiUrl}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include'
-    });
+  const username = document.getElementById("loginUsername").value;
+  const password = document.getElementById("loginPassword").value;
+  const response = await fetch(`${apiUrl}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+    credentials: 'include'
+  });
 
-    const data = await response.json();
-    if (response.ok) {
-        alert("✅ Đăng nhập thành công");
-        document.getElementById("chatTab").disabled = false;
-        document.getElementById("diagnosisTab").disabled = false;
-        showTab('chat');
-    } else {
-        alert(data.detail || "❌ Đăng nhập thất bại");
-    }
+  const data = await response.json();
+  if (response.ok) {
+    alert("✅ Đăng nhập thành công");
+    document.getElementById("chatTab").disabled = false;
+    document.getElementById("diagnosisTab").disabled = false;
+    showTab('chat');
+  } else {
+    alert(data.detail || "❌ Đăng nhập thất bại");
+  }
 }
 
 async function register() {
-    const username = document.getElementById("registerUsername").value;
-    const password = document.getElementById("registerPassword").value;
-    const response = await fetch(`${apiUrl}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include'
-    });
+  const username = document.getElementById("registerUsername").value;
+  const password = document.getElementById("registerPassword").value;
+  const response = await fetch(`${apiUrl}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+    credentials: 'include'
+  });
 
-    const data = await response.json();
-    if (response.ok) {
-        alert("✅ Đăng ký thành công, hãy đăng nhập");
-    } else {
-        alert(data.detail || "❌ Đăng ký thất bại");
-    }
+  const data = await response.json();
+  if (response.ok) {
+    alert("✅ Đăng ký thành công! Hãy đăng nhập.");
+    switchToLogin(); // 👉 Sau khi register thành công thì quay lại login
+  } else {
+    alert(data.detail || "❌ Đăng ký thất bại");
+  }
 }
 
 async function sendChat() {
-    const chatInput = document.getElementById("chatInput").value;
-    if (!chatInput.trim()) return;
+  const chatInput = document.getElementById("chatInput").value;
+  if (!chatInput.trim()) return;
 
-    // Add user message
-    const chatBox = document.getElementById("chatBox");
-    const userDiv = document.createElement("div");
-    userDiv.className = "message user-message";
-    userDiv.innerText = chatInput;
-    chatBox.appendChild(userDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
+  const chatBox = document.getElementById("chatBox");
+  const userDiv = document.createElement("div");
+  userDiv.className = "message user-message";
+  userDiv.innerText = chatInput;
+  chatBox.appendChild(userDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
 
-    document.getElementById("chatInput").value = "";
+  document.getElementById("chatInput").value = "";
 
-    // Call API
-    const response = await fetch(`${apiUrl}/chat/chatbot`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: chatInput }),
-        credentials: 'include'
-    });
+  const response = await fetch(`${apiUrl}/chat/chatbot`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: chatInput }),
+    credentials: 'include'
+  });
 
-    const data = await response.json();
-    const botDiv = document.createElement("div");
-    botDiv.className = "message bot-message";
+  const data = await response.json();
+  const botDiv = document.createElement("div");
+  botDiv.className = "message bot-message";
 
-    if (response.ok) {
-        botDiv.innerText = data.response;
-    } else {
-        botDiv.innerText = data.detail || "❌ Lỗi khi chat";
-    }
-    chatBox.appendChild(botDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
+  if (response.ok) {
+    botDiv.innerText = data.response;
+  } else {
+    botDiv.innerText = data.detail || "❌ Lỗi khi chat";
+  }
+  chatBox.appendChild(botDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 async function sendDiagnosis() {
-    const fileInput = document.getElementById("imageInput");
-    if (!fileInput.files.length) {
-        alert("❗ Vui lòng chọn ảnh");
-        return;
-    }
-    const formData = new FormData();
-    formData.append('file', fileInput.files[0]);
+  const fileInput = document.getElementById("imageInput");
+  if (!fileInput.files.length) {
+    alert("❗ Vui lòng chọn ảnh");
+    return;
+  }
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
 
-    const diagnosisDiv = document.getElementById("diagnosisResult");
-    diagnosisDiv.innerHTML = `<p>⏳ Đang chẩn đoán...</p>`;
+  const diagnosisDiv = document.getElementById("diagnosisResult");
+  diagnosisDiv.innerHTML = `<p>⏳ Đang chẩn đoán...</p>`;
 
-    const response = await fetch(`${apiUrl}/diagnosis/diagnosis_plant`, {
-        method: "POST",
-        body: formData,
-        credentials: 'include'
-    });
+  const response = await fetch(`${apiUrl}/diagnosis/diagnosis_plant`, {
+    method: "POST",
+    body: formData,
+    credentials: 'include'
+  });
 
-    const data = await response.json();
-    if (response.ok) {
-        const imgURL = URL.createObjectURL(fileInput.files[0]);
-        diagnosisDiv.innerHTML = `
-            <img src="${imgURL}" class="diagnosis-img">
-            <p><strong>🩺 Kết quả:</strong> ${data.response}</p>
-        `;
-    } else {
-        diagnosisDiv.innerHTML = `<p>❌ Lỗi: ${data.detail}</p>`;
-    }
+  const data = await response.json();
+  if (response.ok) {
+    const imgURL = URL.createObjectURL(fileInput.files[0]);
+    diagnosisDiv.innerHTML = `
+      <img src="${imgURL}" class="diagnosis-img">
+      <p><strong>🩺 Kết quả:</strong> ${data.response}</p>
+    `;
+  } else {
+    diagnosisDiv.innerHTML = `<p>❌ Lỗi: ${data.detail}</p>`;
+  }
 }
 </script>
 
