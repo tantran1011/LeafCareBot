@@ -147,10 +147,10 @@
 
         async function sendChat() {
             const chatInput = document.getElementById("chatInput").value;
-            const response = await fetch(`${apiUrl}/chat/chatbot`, { // Đã fix URL
+            const response = await fetch(`${apiUrl}/chat/chatbot`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: chatInput }),
+                body: JSON.stringify({ message: chatInput }),  // 👈 Đúng field message
                 credentials: 'include'
             });
 
@@ -162,6 +162,7 @@
                 showTab('auth');
             }
         }
+
 
         async function sendDiagnosis() {
             const fileInput = document.getElementById("imageInput").files[0];
