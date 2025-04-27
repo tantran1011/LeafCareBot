@@ -56,7 +56,7 @@
             display: flex;
             flex-direction: column;
         }
-        input[type="email"], input[type="password"], input[type="text"], input[type="file"] {
+        input[type="text"], input[type="password"], input[type="file"] {
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #c6f6d5;
@@ -97,7 +97,7 @@
 <div id="register" class="tab-content">
     <h2>Đăng ký tài khoản</h2>
     <form id="registerForm">
-        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="text" id="regUsername" placeholder="Tên đăng nhập" required>
         <input type="password" id="regPassword" placeholder="Mật khẩu" required>
         <button type="submit">Đăng ký</button>
     </form>
@@ -106,7 +106,7 @@
 <div id="login" class="tab-content" style="display:none">
     <h2>Đăng nhập</h2>
     <form id="loginForm">
-        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="text" id="loginUsername" placeholder="Tên đăng nhập" required>
         <input type="password" id="loginPassword" placeholder="Mật khẩu" required>
         <button type="submit">Đăng nhập</button>
     </form>
@@ -145,13 +145,13 @@ function showTab(tabId) {
 // Đăng ký
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('regEmail').value;
+    const username = document.getElementById('regUsername').value;
     const password = document.getElementById('regPassword').value;
 
     const res = await fetch(`${baseUrl}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
     });
 
     const data = await res.json();
@@ -161,13 +161,13 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 // Đăng nhập
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
+    const username = document.getElementById('loginUsername').value;
     const password = document.getElementById('loginPassword').value;
 
     const res = await fetch(`${baseUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
     });
 
     const data = await res.json();
@@ -183,6 +183,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 // Chat
 document.getElementById('chatForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!token) {
+        alert("Bạn cần đăng nhập trước!");
+        return;
+    }
+
     const message = document.getElementById('chatInput').value;
 
     const res = await fetch(`${baseUrl}/chat.cahtbot`, {
@@ -195,12 +200,17 @@ document.getElementById('chatForm').addEventListener('submit', async (e) => {
     });
 
     const data = await res.json();
-    document.getElementById('chatResult').innerText = `Bot: ${data.response || JSON.stringify(data)}`;
+    document.getElementById('chatResult').innerText = `Bot: ${data.response || "Không nhận được phản hồi"}`;
 });
 
 // Upload ảnh
 document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!token) {
+        alert("Bạn cần đăng nhập trước!");
+        return;
+    }
+
     const fileInput = document.getElementById('plantImage');
     const formData = new FormData();
     formData.append("file", fileInput.files[0]);
@@ -214,7 +224,8 @@ document.getElementById('uploadForm').addEventListener('submit', async (e) => {
     });
 
     const data = await res.json();
-    document.getElementById('uploadResult').innerText = `Kết quả: ${data.result || JSON.stringify(data)}`;
+    const resultText = data.result ? `Chẩn đoán: ${data.result}` : "Không nhận được kết quả";
+    document.getElementById('uploadResult').innerText = resultText;
 });
 </script>
 
