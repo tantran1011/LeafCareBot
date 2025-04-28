@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from starlette.middleware.sessions import SessionMiddleware
 from app.middleware.middleware import log_request_time
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 
 load_dotenv()
@@ -35,4 +36,4 @@ app.include_router(diagnosis.router, prefix="/diagnosis")
 
 @app.get('/')
 def home():
-    return {"message": "Server is running"}
+    return FileResponse('static/index.html')
