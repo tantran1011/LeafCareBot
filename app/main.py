@@ -36,4 +36,4 @@ app.include_router(diagnosis.router, prefix="/diagnosis")
 
 @app.get('/')
 def home():
-    return FileResponse('static/index.html')
+    return FileResponse('app/static/index.html')
