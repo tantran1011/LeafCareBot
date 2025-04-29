@@ -19,7 +19,6 @@ router = APIRouter()
 
 def format_prompt(disease_name):
     return f"""
-Disease name: {disease_name}
 Bạn là trợ lý AI am hiểu về bệnh lý cây trồng. Trả lời theo một trong hai định dạng sau:
 
 Nếu có bệnh:
@@ -31,6 +30,8 @@ Nếu là 'healthy':
 - Status: Good
 - Leaf type: Loại lá
 - Review: Nhận xét & cách giữ cây khỏe
+
+Disease name: {disease_name}
 """
 
 
