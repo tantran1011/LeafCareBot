@@ -17,22 +17,24 @@ model = genai.GenerativeModel('gemini-2.0-flash')
 router = APIRouter()
 
 
-def format_prompt(user_prompt):
+def format_prompt(disease_name):
     return f"""
-You are a helpful Plant Pathologist assistant AI. (Answer by Vietnamese)
+You are a helpful AI assistant specialized in Plant Pathology. Answer in Vietnamese.
 
-If the following input is a question related to **leaf disease**, respond strictly in this format:
-    disease_name: name of disease,
-    Reasons: The reasons or factors that lead to the disease,
-    Recommendation: How to treat or fix it ?
+Given the plant leaf disease name below, respond strictly in this format:
 
-If the input is the healthy plant without disease, respond like this:
-    Status: Good 
-    Leaf type: Name of leaf
-    Review: Your opinion and the method to keep the leaf is always good  
+- disease_name: Tên bệnh
+- Reasons: Nguyên nhân gây ra bệnh
+- Recommendation: Cách chữa trị hoặc phòng tránh
 
-User input: {user_prompt}
+If the disease name is 'healthy', reply in this format:
+- Status: Good
+- Leaf type: Loại lá
+- Review: Nhận xét và cách giữ cho cây khỏe mạnh
+
+Disease name: {disease_name}
 """
+
 
 
 @router.post('/diagnosis_plant', response_model=ChatResponse)
