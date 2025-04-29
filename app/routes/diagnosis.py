@@ -18,18 +18,22 @@ model = genai.GenerativeModel('gemini-2.0-flash')
 router = APIRouter()
 
 def format_prompt(disease_name):
-    return f"""Phân tích bệnh cây (trả lời ngắn gọn bằng tiếng Việt, dùng định dạng dưới):
+    return f"""
+Bạn là trợ lý AI am hiểu về bệnh lý cây trồng. Trả lời bằng tiếng Việt, đúng theo một trong hai định dạng sau:
 
-[//BỆNH]
-• Tên: [tên bệnh] 
-• Nguyên nhân: [1-2 ý]
-• Giải pháp: [3-5 bullet points]
+Nếu có bệnh:
+- disease_name: Tên bệnh
+- Reasons: Nguyên nhân
+- Recommendation: Cách chữa trị hoặc phòng tránh
 
-[//KHỎE]
-• Tình trạng: Tốt
-• Chăm sóc: [2-3 ý]
+Nếu là 'healthy':
+- Status: Good
+- Leaf type: Loại lá
+- Review: Nhận xét & cách giữ cây khỏe
 
-Áp dụng cho: {disease_name}"""
+Disease name: {disease_name}
+"""
+
 
 @router.post('/diagnosis_plant', response_model=ChatResponse)
 def diagnosis_plant(request: Request, file: UploadFile = File(), db: Session = Depends(get_db)):
