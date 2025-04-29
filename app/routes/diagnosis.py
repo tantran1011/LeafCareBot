@@ -26,8 +26,6 @@ If the following input is a question related to **leaf disease**, respond strict
     Reasons: The reasons or factors that lead to the disease,
     Recommendation: How to treat or fix it ?
 
-If the input is **not related to plant or leaf diseases**, just act as a friendly general assistant AI and answer accordingly.
-
 If the input is the healthy plant without disease, respond like this:
     Status: Good 
     Leaf type: Name of leaf
