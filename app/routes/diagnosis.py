@@ -1,4 +1,5 @@
 import os
+import time
 import google.generativeai as genai
 from app.config import get_db
 from app.utils.image_upload import img2cloud
@@ -36,28 +37,42 @@ Disease name: {disease_name}
 """
 
 
-
 @router.post('/diagnosis_plant', response_model=ChatResponse)
 def diagnosis_plant(request: Request, file: UploadFile = File(), db: Session = Depends(get_db)):
-    user_id = request.session.get("user_id")
+    start_total = time.time()
 
-    if not user_id: 
+    user_id = request.session.get("user_id")
+    if not user_id:
         raise HTTPException(status_code=401, detail="User not login")
-    
+
+    # 1. Upload cloud
+    t1 = time.time()
     secure_url = img2cloud(file, user_id)
-    print(secure_url)
+    print("✅ Upload URL:", secure_url)
+    print("⏱️ Upload time:", round(time.time() - t1, 3), "s")
+
+    # 2. Predict 
+    t2 = time.time()
     diagnosis = predict_plant_disease(secure_url)
-    print(diagnosis)
+    print("✅ Diagnosis:", diagnosis)
+    print("⏱️ Predict time:", round(time.time() - t2, 3), "s")
+
+    # 3. GeminiAPI
+    t3 = time.time()
     response = model.generate_content(format_prompt(diagnosis))
     reply = response.text
+    print("⏱️ Gemini time:", round(time.time() - t3, 3), "s")
 
-    chat_record = ChatHistory(user_id=user_id, question=diagnosis, image_url=secure_url ,response=reply)
+    # 4. storage DB
+    t4 = time.time()
+    chat_record = ChatHistory(user_id=user_id, question=diagnosis, image_url=secure_url, response=reply)
     db.add(chat_record)
     db.commit()
-    db.refresh(chat_record)
-    chat_logger.info("Got response")
-    return ChatResponse(response=reply)
+    print("⏱️ DB commit time:", round(time.time() - t4, 3), "s")
 
+    print("🔥 Total time:", round(time.time() - start_total, 3), "s")
+
+    return ChatResponse(response=reply)
 
 @router.get('/plant_information')
 def plant_information(id: int, db: Session = Depends(get_db)):
