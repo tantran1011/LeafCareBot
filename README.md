@@ -58,14 +58,14 @@ The API will be available at: http://127.0.0.1:8000
 
 ## 📚 API Endpoints
 
-Method | Endpoint | Description
-POST | /auth/register | Register a new user
-POST | /auth/login | Login and receive JWT token
-POST | /chat.chatbot | Send a message to the AI chatbot
-POST | /diagnosis/diagnosis_plant | Upload a plant image for disease prediction
+| Method | Endpoint                  | Description                                                      |
+|--------|---------------------------|------------------------------------------------------------------|
+| POST   | /auth/register             | Register a new user                                             |
+| POST   | /auth/login                | Login and receive JWT token                                     |
+| POST   | /chat.chatbot              | Send a message to the AI chatbot                                |
+| POST   | /diagnosis/diagnosis_plant | Upload a plant image for disease prediction                      |
 
-You can test the endpoints using Postman or directly through the Swagger UI:
-👉 Swagger UI
+You can test the endpoints using Postman or directly through the Swagger UI: 👉 [Swagger UI](http://127.0.0.1:8000)
 
 ## 🎨 Frontend (Optional)
 
