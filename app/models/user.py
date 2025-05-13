@@ -16,3 +16,8 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+
+class Productivity(BaseModel):
+    location: str
+    area: int
+    num_plants: int 

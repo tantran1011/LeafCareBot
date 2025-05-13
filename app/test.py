@@ -1,8 +1,8 @@
 import google.generativeai as genai
 from utils.utils import STATE_PROMPT
 from dotenv import load_dotenv
-import re
 import os
+from services.weather import get_weather
 
 load_dotenv()
 
@@ -25,12 +25,12 @@ def chat_with_state(history=[]):
         chat = model.start_chat(history=history)
 
     while True:
-        user_input = input("Bạn: ")
+        user_input = input("Bạn:" )
         if user_input.lower() == 'thoát':
             break
 
         response = chat.send_message(user_input)
-        print("Gemini:", response.text)
+        print("Gemini:", response.text )
 
         # Cập nhật lịch sử trò chuyện
         history = chat.history
@@ -38,23 +38,67 @@ def chat_with_state(history=[]):
     # print("--- Kết thúc trò chuyện ---")
     return history
 
+def diagnosis(mess, history=[]):
+    if not history:
+        chat = model.start_chat()
+    else:
+        chat = model.start_chat(history=history)
+
+    response = chat.send_message(mess)
+    print(response.text)
+    history = chat.history
+    return history
+
+def get_weather(location):
+    # Đây là hàm giả định để lấy thông tin thời tiết
+    # Trong thực tế, bạn sẽ gọi một API thời tiết thực sự
+    weather_data = {"Hanoi": "Sunny", "Ho Chi Minh City": "Rainy"}
+    return weather_data.get(location, "Unknown")
+
 if __name__ == "__main__":
-    # Bắt đầu một phiên trò chuyện mới
-    conversation_history = chat_with_state()
+    import cv2
+    import onnxruntime as ort
+    from utils.class_name import MODEL_PATH, CLASS, normalize_class_name
+    import numpy as np
 
-    # Bạn có thể tiếp tục trò chuyện với cùng lịch sử nếu muốn
-    # print("\n--- Tiếp tục trò chuyện (nếu muốn) ---")
-    conversation_history = chat_with_state(history=conversation_history)
+    session = ort.InferenceSession(MODEL_PATH)
 
-    # print("\nLịch sử trò chuyện cuối cùng:", conversation_history)
-    user_content = []
-    model_content = []
-    for item in conversation_history:
-        txt = re.search(r'text:\s*"([^"]+)"', str(item))
-        role = re.search(r'role:\s*"([^"]+)"', str(item))
-        if role.group(1) == 'user':
-            user_content.append(txt.group(1))
-        else:
-            model_content.append(txt.group(1))
-    print(model_content)
+    img = cv2.imread("test1.jpg")
+    img = cv2.resize(img, (224,224))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = np.expand_dims(img, axis=0)
+    img = img.astype(np.float32)
 
+    input_name = session.get_inputs()[0].name
+    outputs = session.run(None, {input_name: img})
+    pred_class = np.argmax(outputs)
+
+    disease = normalize_class_name(CLASS[pred_class])
+    print(f"Bệnh dự đoán: {disease}")
+
+    conversation_history = []
+
+    # Gửi thông tin bệnh để model nhận xét ban đầu và hỏi thêm
+    initial_prompt = f"The detected disease is {disease}. Please give a short initial assessment and then ask for the location, area (in hectares), and the number of plants."
+    conversation_history = diagnosis(initial_prompt, conversation_history)
+
+    # Giả định người dùng cung cấp thông tin (trong thực tế bạn cần thu thập từ người dùng)
+    location = "Hanoi"
+    area = 2
+    number = 1500
+
+    # Gửi thông tin người dùng và yêu cầu tính toán năng suất
+    user_response_location = {"role": "user", "content": f"The location is {location}."}
+    conversation_history = diagnosis(user_response_location["content"], conversation_history)
+
+    user_response_area = {"role": "user", "content": f"The area is {area} hectares."}
+    conversation_history = diagnosis(user_response_area["content"], conversation_history)
+
+    user_response_number = {"role": "user", "content": f"The number of plants is {number}."}
+    conversation_history = diagnosis(user_response_number["content"], conversation_history)
+
+    weather = get_weather(location)
+    final_prompt = f"Now, using the disease '{disease}', location '{location}' (weather: {weather}), area '{area}' hectares, and '{number}' plants, please calculate the Productivity (unit) and explain briefly."
+    conversation_history = diagnosis(final_prompt, conversation_history)
+
+    print("\nLịch sử trò chuyện cuối cùng:", conversation_history)
