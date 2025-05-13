@@ -49,12 +49,6 @@ def diagnosis(mess, history=[]):
     history = chat.history
     return history
 
-def get_weather(location):
-    # Đây là hàm giả định để lấy thông tin thời tiết
-    # Trong thực tế, bạn sẽ gọi một API thời tiết thực sự
-    weather_data = {"Hanoi": "Sunny", "Ho Chi Minh City": "Rainy"}
-    return weather_data.get(location, "Unknown")
-
 if __name__ == "__main__":
     import cv2
     import onnxruntime as ort

@@ -1,266 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>LeafCareBot</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #e8f5e9;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      width: 400px;
-      margin: 50px auto;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #2e7d32;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      margin-bottom: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    button {
-      background-color: #66bb6a;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #4caf50;
-    }
-    .hidden {
-      display: none;
-    }
-    .chatbox {
-      max-height: 300px;
-      overflow-y: auto;
-      background-color: #f1f8e9;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    .message {
-      margin: 8px 0;
-      padding: 8px 12px;
-      border-radius: 10px;
-      max-width: 70%;
-      clear: both;
-    }
-    .user-message {
-      background-color: #c8e6c9;
-      float: right;
-      text-align: right;
-    }
-    .bot-message {
-      background-color: #ffffff;
-      float: left;
-      text-align: left;
-    }
-    .diagnosis-result {
-      text-align: center;
-    }
-    .diagnosis-img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    nav button {
-      width: auto;
-      margin: 0 5px;
-      padding: 8px 16px;
-    }
-    .link {
-      text-align: center;
-      color: #388e3c;
-      cursor: pointer;
-      text-decoration: underline;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>LeafCareBot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/static/test1.jpg'); /* 💬 Thay đổi đường dẫn ảnh nền */
+            background-size: cover;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.6); /* Lớp phủ trắng mờ */
+            z-index: -1;
+            backdrop-filter: blur(5px); /* Hiệu ứng mờ cho lớp phủ */
+        }
+        .container {
+            width: 400px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.85); /* Nền container hơi trong suốt */
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            z-index: 1; /* Đảm bảo container nằm trên lớp phủ */
+        }
+        h2 {
+            text-align: center;
+            color: #2e7d32;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        nav button {
+            width: auto;
+            margin: 0 5px;
+            padding: 8px 16px;
+            background-color: #66bb6a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        nav button:hover {
+            background-color: #4caf50;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước phần tử */
+        }
+        button {
+            background-color: #66bb6a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4caf50;
+        }
+        .hidden {
+            display: none;
+        }
+        .chatbox {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: rgba(241, 248, 233, 0.7); /* Nền chatbox hơi trong suốt */
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border-radius: 10px;
+            max-width: 70%;
+            clear: both;
+            word-break: break-word; /* Tránh tràn chữ dài */
+        }
+        .user-message {
+            background-color: rgba(200, 230, 201, 0.8); /* Xanh lá nhạt hơn, hơi trong suốt */
+            float: right;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: rgba(255, 255, 255, 0.8); /* Trắng hơi trong suốt */
+            float: left;
+            text-align: left;
+        }
+        .diagnosis-result {
+            text-align: center;
+        }
+        .diagnosis-img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .link {
+            text-align: center;
+            color: #388e3c;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 10px;
+        }
+        /* Стиль cho phần tính năng suất */
+        #productivity h3 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        #productivity input[type="text"],
+        #productivity input[type="number"],
+        #productivity button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        #productivity button {
+            background-color: #66bb6a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #productivity button:hover {
+            background-color: #4caf50;
+        }
+        #productivityResult {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>🌿 LeafCareBot</h2>
+    <h2>🌿 LeafCareBot</h2>
 
-  <nav>
-    <button onclick="showTab('login')">Login</button>
-    <button onclick="showTab('chat')" id="chatTab" disabled>Chat</button>
-    <button onclick="showTab('diagnosis')" id="diagnosisTab" disabled>Diagnosis</button>
-  </nav>
+    <nav>
+        <button onclick="showTab('login')">Login</button>
+        <button onclick="showTab('chat')" id="chatTab" disabled>Chat</button>
+        <button onclick="showTab('diagnosis')" id="diagnosisTab" disabled>Chẩn Đoán</button>
+        <button onclick="showTab('productivity')" id="productivityTab" disabled>Tính Năng Suất</button>
+    </nav>
 
-  <!-- Login -->
-  <div id="login">
-    <h3>Login</h3>
-    <input type="text" id="loginUsername" placeholder="Username">
-    <input type="password" id="loginPassword" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <div class="link" onclick="switchToRegister()">Chưa có tài khoản? Đăng ký</div>
-  </div>
+    <div id="login">
+        <h3>Đăng nhập</h3>
+        <input type="text" id="loginUsername" placeholder="Tên đăng nhập">
+        <input type="password" id="loginPassword" placeholder="Mật khẩu">
+        <button onclick="login()">Đăng nhập</button>
+        <div class="link" onclick="switchToRegister()">Chưa có tài khoản? Đăng ký</div>
+    </div>
 
-  <!-- Register -->
-  <div id="register" class="hidden">
-    <h3>Register</h3>
-    <input type="text" id="registerUsername" placeholder="Username">
-    <input type="password" id="registerPassword" placeholder="Password">
-    <button onclick="register()">Register</button>
-    <div class="link" onclick="switchToLogin()">Đã có tài khoản? Đăng nhập</div>
-  </div>
+    <div id="register" class="hidden">
+        <h3>Đăng ký</h3>
+        <input type="text" id="registerUsername" placeholder="Tên đăng nhập">
+        <input type="password" id="registerPassword" placeholder="Mật khẩu">
+        <button onclick="register()">Đăng ký</button>
+        <div class="link" onclick="switchToLogin()">Đã có tài khoản? Đăng nhập</div>
+    </div>
 
-  <!-- Chat -->
-  <div id="chat" class="hidden">
-    <div class="chatbox" id="chatBox"></div>
-    <input type="text" id="chatInput" placeholder="Type your message...">
-    <button onclick="sendChat()">Send</button>
-  </div>
+    <div id="chat" class="hidden">
+        <div class="chatbox" id="chatBox"></div>
+        <input type="text" id="chatInput" placeholder="Nhập tin nhắn...">
+        <button onclick="sendChat()">Gửi</button>
+    </div>
 
-  <!-- Diagnosis -->
-  <div id="diagnosis" class="hidden">
-    <input type="file" id="imageInput" accept="image/*">
-    <button onclick="sendDiagnosis()">Upload & Diagnose</button>
-    <div class="diagnosis-result" id="diagnosisResult"></div>
-  </div>
+    <div id="diagnosis" class="hidden">
+        <h3>Chẩn Đoán Bệnh Cây</h3>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="sendDiagnosis()">Tải lên & Chẩn đoán</button>
+        <div class="diagnosis-result" id="diagnosisResult"></div>
+    </div>
+
+    <div id="productivity" class="hidden">
+        <h3>Tính Năng Suất</h3>
+        <input type="text" id="locationInput" placeholder="Địa điểm (ví dụ: Hanoi, Buon Ma Thuot)">
+        <input type="number" id="areaInput" placeholder="Diện tích (hectare)">
+        <input type="number" id="numPlantsInput" placeholder="Số lượng cây">
+        <button onclick="calculateProductivity()">Tính Toán</button>
+        <div id="productivityResult" class="diagnosis-result"></div>
+    </div>
 </div>
 
 <script>
-const apiUrl = 'https://leafcarebot.onrender.com'; // 💬 Update nếu đổi backend url
+    // const apiUrl = 'https://leafcarebot.onrender.com'; //
+    const apiUrl = ' http://127.0.0.1:8000'
 
-function showTab(tab) {
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('register').classList.add('hidden');
-  document.getElementById('chat').classList.add('hidden');
-  document.getElementById('diagnosis').classList.add('hidden');
-  document.getElementById(tab).classList.remove('hidden');
-}
+    function showTab(tab) {
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('register').classList.add('hidden');
+        document.getElementById('chat').classList.add('hidden');
+        document.getElementById('diagnosis').classList.add('hidden');
+        document.getElementById('productivity').classList.add('hidden');
+        document.getElementById(tab).classList.remove('hidden');
+    }
 
-function switchToRegister() {
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('register').classList.remove('hidden');
-}
+    function switchToRegister() {
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('register').classList.remove('hidden');
+    }
 
-function switchToLogin() {
-  document.getElementById('register').classList.add('hidden');
-  document.getElementById('login').classList.remove('hidden');
-}
+    function switchToLogin() {
+        document.getElementById('register').classList.add('hidden');
+        document.getElementById('login').classList.remove('hidden');
+    }
 
-async function login() {
-  const username = document.getElementById("loginUsername").value;
-  const password = document.getElementById("loginPassword").value;
-  const response = await fetch(`${apiUrl}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-    credentials: 'include'
-  });
+    async function login() {
+        const username = document.getElementById("loginUsername").value;
+        const password = document.getElementById("loginPassword").value;
+        const response = await fetch(`${apiUrl}/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
+        });
 
-  const data = await response.json();
-  if (response.ok) {
-    alert("✅ Đăng nhập thành công");
-    document.getElementById("chatTab").disabled = false;
-    document.getElementById("diagnosisTab").disabled = false;
-    showTab('chat');
-  } else {
-    alert(data.detail || "❌ Đăng nhập thất bại");
-  }
-}
+        const data = await response.json();
+        if (response.ok) {
+            alert("✅ Đăng nhập thành công");
+            document.getElementById("chatTab").disabled = false;
+            document.getElementById("diagnosisTab").disabled = false;
+            document.getElementById("productivityTab").disabled = false;
+            showTab('chat');
+        } else {
+            alert(data.detail || "❌ Đăng nhập thất bại");
+        }
+    }
 
-async function register() {
-  const username = document.getElementById("registerUsername").value;
-  const password = document.getElementById("registerPassword").value;
-  const response = await fetch(`${apiUrl}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-    credentials: 'include'
-  });
+    async function register() {
+        const username = document.getElementById("registerUsername").value;
+        const password = document.getElementById("registerPassword").value;
+        const response = await fetch(`${apiUrl}/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+            credentials: 'include'
+        });
 
-  const data = await response.json();
-  if (response.ok) {
-    alert("✅ Đăng ký thành công! Hãy đăng nhập.");
-    switchToLogin(); // 👉 Sau khi register thành công thì quay lại login
-  } else {
-    alert(data.detail || "❌ Đăng ký thất bại");
-  }
-}
+        const data = await response.json();
+        if (response.ok) {
+            alert("✅ Đăng ký thành công! Hãy đăng nhập.");
+            switchToLogin(); // 👉 Sau khi register thành công thì quay lại login
+        } else {
+            alert(data.detail || "❌ Đăng ký thất bại");
+        }
+    }
 
-async function sendChat() {
-  const chatInput = document.getElementById("chatInput").value;
-  if (!chatInput.trim()) return;
+    async function sendChat() {
+        const chatInput = document.getElementById("chatInput").value;
+        if (!chatInput.trim()) return;
 
-  const chatBox = document.getElementById("chatBox");
-  const userDiv = document.createElement("div");
-  userDiv.className = "message user-message";
-  userDiv.innerText = chatInput;
-  chatBox.appendChild(userDiv);
-  chatBox.scrollTop = chatBox.scrollHeight;
+        const chatBox = document.getElementById("chatBox");
+        const userDiv = document.createElement("div");
+        userDiv.className = "message user-message";
+        userDiv.innerText = chatInput;
+        chatBox.appendChild(userDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-  document.getElementById("chatInput").value = "";
+        document.getElementById("chatInput").value = "";
 
-  const response = await fetch(`${apiUrl}/chat/chatbot`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: chatInput }),
-    credentials: 'include'
-  });
+        const response = await fetch(`${apiUrl}/chat/chatbot`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: chatInput }),
+            credentials: 'include'
+        });
 
-  const data = await response.json();
-  const botDiv = document.createElement("div");
-  botDiv.className = "message bot-message";
+        const data = await response.json();
+        const botDiv = document.createElement("div");
+        botDiv.className = "message bot-message";
 
-  if (response.ok) {
-    botDiv.innerText = data.response;
-  } else {
-    botDiv.innerText = data.detail || "❌ Lỗi khi chat";
-  }
-  chatBox.appendChild(botDiv);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+        if (response.ok) {
+            botDiv.innerText = data.response;
+        } else {
+            botDiv.innerText = data.detail || "❌ Lỗi khi chat";
+        }
+        chatBox.appendChild(botDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-async function sendDiagnosis() {
-  const fileInput = document.getElementById("imageInput");
-  if (!fileInput.files.length) {
-    alert("❗ Vui lòng chọn ảnh");
-    return;
-  }
-  const formData = new FormData();
-  formData.append('file', fileInput.files[0]);
+    async function sendDiagnosis() {
+        const fileInput = document.getElementById("imageInput");
+        if (!fileInput.files.length) {
+            alert("❗ Vui lòng chọn ảnh");
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
 
-  const diagnosisDiv = document.getElementById("diagnosisResult");
-  diagnosisDiv.innerHTML = `<p>⏳ Đang chẩn đoán...</p>`;
+        const diagnosisDiv = document.getElementById("diagnosisResult");
+        diagnosisDiv.innerHTML = `<p>⏳ Đang chẩn đoán...</p>`;
 
-  const response = await fetch(`${apiUrl}/diagnosis/diagnosis_plant`, {
-    method: "POST",
-    body: formData,
-    credentials: 'include'
-  });
+        const response = await fetch(`${apiUrl}/diagnosis/diagnosis_plant`, {
+            method: "POST",
+            body: formData,
+            credentials: 'include'
+        });
 
-  const data = await response.json();
-  if (response.ok) {
-    const imgURL = URL.createObjectURL(fileInput.files[0]);
-    diagnosisDiv.innerHTML = `
-      <img src="${imgURL}" class="diagnosis-img">
-      <p><strong>🩺 Kết quả:</strong> ${data.response}</p>
-    `;
-  } else {
-    diagnosisDiv.innerHTML = `<p>❌ Lỗi: ${data.detail}</p>`;
-  }
-}
+        const data = await response.json();
+        if (response.ok) {
+            const imgURL = URL.createObjectURL(fileInput.files[0]);
+            diagnosisDiv.innerHTML = `
+                <img src="${imgURL}" class="diagnosis-img">
+                <p><strong>🩺 Kết quả:</strong> ${data.response}</p>
+            `;
+        } else {
+            diagnosisDiv.innerHTML = `<p>❌ Lỗi: ${data.detail}</p>`;
+        }
+    }
+
+    async function calculateProductivity() {
+      const location = document.getElementById("locationInput").value;
+      const areaStr = document.getElementById("areaInput").value;
+      const numPlantsStr = document.getElementById("numPlantsInput").value;
+      const productivityDiv = document.getElementById("productivityResult");
+      productivityDiv.innerHTML = `<p>⏳ Đang tính toán năng suất...</p>`;
+
+      const area = parseInt(areaStr);
+      const num_plants = parseInt(numPlantsStr);
+
+      if (isNaN(area) || isNaN(num_plants)) {
+          alert("❗ Vui lòng nhập số nguyên hợp lệ cho diện tích và số lượng cây.");
+          productivityDiv.innerHTML = `<p>❌ Lỗi: Dữ liệu nhập không hợp lệ (diện tích và số lượng cây phải là số nguyên).</p>`;
+          return;
+      }
+
+      const response = await fetch(`${apiUrl}/diagnosis/calculate_productivity`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ location, area, num_plants }),
+          credentials: 'include'
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+          productivityDiv.innerHTML = `<p><strong>📊 Năng suất:</strong> ${data.response}</p>`;
+      } else {
+          productivityDiv.innerHTML = `<p>❌ Lỗi: ${data.detail}</p>`;
+      }
+    }
 </script>
 
 </body>

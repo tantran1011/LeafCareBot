@@ -20,4 +20,4 @@ class ChatResponse(BaseModel):
 class Productivity(BaseModel):
     location: str
     area: int
-    num_plants: int 
+    num_plants: int

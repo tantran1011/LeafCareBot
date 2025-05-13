@@ -30,7 +30,6 @@ def chat_state(mess, history=[]):
         chat = model.start_chat(history=history)
 
     response = chat.send_message(mess)
-    print(response.text)
     history = chat.history
     return history, response
 
@@ -95,7 +94,7 @@ def continue_diagnosis(request: Request, user_response: str = Body(..., embed=Tr
         history.append(user_content)
         history.append(model_content)
 
-    updated_history, response = chat_state(user_response, list(history))
+    _, response = chat_state(user_response, list(history))
 
     reply = response.text
 
@@ -115,8 +114,8 @@ def calculate_productivity(request: Request, case: Productivity, db: Session = D
     previous_chats = db.query(ChatHistory).filter(ChatHistory.user_id == user_id).order_by(ChatHistory.timestamp).all()
     history = []
     for chat in previous_chats:
-        print(f"Question: {chat.question}, Type: {type(chat.question)}")
-        print(f"Response: {chat.response}, Type: {type(chat.response)}")
+        # print(f"Question: {chat.question}, Type: {type(chat.question)}")
+        # print(f"Response: {chat.response}, Type: {type(chat.response)}")
         user_content = genai_content.Content(
             role="user",
             parts=[genai_content.Part(text=chat.question)]
@@ -129,11 +128,13 @@ def calculate_productivity(request: Request, case: Productivity, db: Session = D
         history.append(model_content)
 
     weather = get_weather(case.location)
+    print(case.location, case.area, case.num_plants)
 
     final_prompt = f"Based on the disease, location '{case.location}' (weather: {weather}), area '{case.area}' hectares, and '{case.num_plants}' plants, please calculate the Productivity (unit) and explain briefly."
 
-    updated_history, response = chat_state(final_prompt, list(history))
+    _, response = chat_state(final_prompt, list(history))
     reply = response.text
+    print(reply)
 
     chat_record = ChatHistory(user_id=user_id, question=final_prompt, response=reply)
     db.add(chat_record)
