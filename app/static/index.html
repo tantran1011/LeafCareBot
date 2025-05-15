@@ -15,34 +15,43 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            position: relative; /* Cần cho lớp phủ */
         }
         body::before {
             content: '';
-            position: fixed;
+            position: fixed; /* Giữ lớp phủ cố định */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(255, 255, 255, 0.6); /* Lớp phủ trắng mờ */
-            z-index: -1;
-            backdrop-filter: blur(5px); /* Hiệu ứng mờ cho lớp phủ */
+            z-index: -1; /* Đảm bảo lớp phủ nằm dưới nội dung */
+            /* backdrop-filter: blur(5px); */ /* Hiệu ứng mờ cho lớp phủ (tùy chọn) */
         }
         .container {
-            width: 400px;
+            width: 90%; /* Tăng độ rộng */
+            max-width: 700px; /* Đặt độ rộng tối đa */
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.85); /* Nền container hơi trong suốt */
+            background-color: rgba(255, 255, 255, 0.9); /* Nền container ít trong suốt hơn */
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            z-index: 1; /* Đảm bảo container nằm trên lớp phủ */
+            z-index: 1;
+            display: flex; /* Sử dụng flexbox cho bố cục bên trong container */
+            flex-direction: column; /* Sắp xếp các phần tử theo cột */
+            min-height: 80vh; /* Đặt chiều cao tối thiểu */
+            max-height: 90vh; /* Đặt chiều cao tối đa */
         }
         h2 {
             text-align: center;
             color: #2e7d32;
+            margin-top: 0; /* Bỏ margin top mặc định */
+            margin-bottom: 15px; /* Thêm khoảng cách dưới */
         }
         nav {
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
+            flex-shrink: 0; /* Ngăn nav bị co lại */
         }
         nav button {
             width: auto;
@@ -53,81 +62,17 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            transition: background-color 0.3s ease; /* Thêm hiệu ứng chuyển đổi */
         }
         nav button:hover {
             background-color: #4caf50;
         }
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước phần tử */
-        }
+        /* Các input và button chung */
+        input[type="text"],
+        input[type="password"],
+        input[type="number"],
+        input[type="file"],
         button {
-            background-color: #66bb6a;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #4caf50;
-        }
-        .hidden {
-            display: none;
-        }
-        .chatbox {
-            max-height: 300px;
-            overflow-y: auto;
-            background-color: rgba(241, 248, 233, 0.7); /* Nền chatbox hơi trong suốt */
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .message {
-            margin: 8px 0;
-            padding: 8px 12px;
-            border-radius: 10px;
-            max-width: 70%;
-            clear: both;
-            word-break: break-word; /* Tránh tràn chữ dài */
-        }
-        .user-message {
-            background-color: rgba(200, 230, 201, 0.8); /* Xanh lá nhạt hơn, hơi trong suốt */
-            float: right;
-            text-align: right;
-        }
-        .bot-message {
-            background-color: rgba(255, 255, 255, 0.8); /* Trắng hơi trong suốt */
-            float: left;
-            text-align: left;
-        }
-        .diagnosis-result {
-            text-align: center;
-        }
-        .diagnosis-img {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .link {
-            text-align: center;
-            color: #388e3c;
-            cursor: pointer;
-            text-decoration: underline;
-            margin-top: 10px;
-        }
-        /* Стиль cho phần tính năng suất */
-        #productivity h3 {
-            text-align: center;
-            color: #2e7d32;
-            margin-bottom: 15px;
-        }
-        #productivity input[type="text"],
-        #productivity input[type="number"],
-        #productivity button {
             width: 100%;
             padding: 10px;
             margin-top: 8px;
@@ -136,11 +81,131 @@
             border-radius: 8px;
             box-sizing: border-box;
         }
-        #productivity button {
+        button {
             background-color: #66bb6a;
             color: white;
             border: none;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #4caf50;
+        }
+
+        .hidden {
+            display: none !important; /* Dùng !important để đảm bảo ghi đè */
+        }
+
+        /* --- START: Styles cho phần Chat --- */
+        #chat {
+            display: flex; /* Sử dụng flexbox cho phần chat */
+            flex-direction: column; /* Sắp xếp các phần tử theo cột */
+            flex-grow: 1; /* Cho phép phần chat chiếm hết không gian còn lại */
+            justify-content: space-between; /* Đẩy chatbox lên trên, input xuống dưới */
+        }
+
+        .chatbox {
+            flex-grow: 1; /* Cho phép chatbox chiếm hết không gian trống */
+            overflow-y: auto; /* Bật thanh cuộn dọc */
+            background-color: rgba(241, 248, 233, 0.8); /* Nền chatbox ít trong suốt hơn */
+            padding: 15px; /* Tăng padding */
+            border-radius: 10px;
+            margin-bottom: 15px; /* Tăng khoảng cách dưới chatbox */
+            display: flex; /* Sử dụng flexbox bên trong chatbox */
+            flex-direction: column; /* Sắp xếp tin nhắn theo cột */
+            gap: 10px; /* Khoảng cách giữa các tin nhắn */
+        }
+
+        .message {
+            padding: 10px 15px; /* Tăng padding trong bong bóng */
+            border-radius: 18px; /* Bo góc nhiều hơn */
+            max-width: 80%; /* Giảm max-width để bong bóng nhỏ hơn */
+            word-break: break-word;
+            position: relative; /* Cần cho pseudo-elements nếu muốn đuôi */
+            clear: both; /* Vẫn cần clear float nếu dùng float, nhưng flexbox trong chatbox tốt hơn */
+        }
+
+        .user-message {
+            background-color: #e0f7fa; /* Màu xanh nhạt cho tin nhắn người dùng */
+            align-self: flex-end; /* Căn bong bóng sang phải (dùng với flexbox trong chatbox) */
+            color: #333; /* Màu chữ */
+            /* Nếu không dùng flexbox trong chatbox, giữ float: right; text-align: right; */
+        }
+
+        .bot-message {
+            background-color: #e8f5e9; /* Màu xanh lá nhạt cho tin nhắn bot */
+            align-self: flex-start; /* Căn bong bóng sang trái (dùng với flexbox trong chatbox) */
+            color: #333; /* Màu chữ */
+            /* Nếu không dùng flexbox trong chatbox, giữ float: left; text-align: left; */
+        }
+
+        .chat-input-area {
+            display: flex; /* Sử dụng flexbox để bố cục input và button */
+            gap: 10px; /* Khoảng cách giữa input và button */
+            flex-shrink: 0; /* Ngăn khu vực input bị co lại */
+            align-items: center; /* Căn chỉnh theo chiều dọc */
+        }
+
+        .chat-input-area input[type="text"] {
+            flex-grow: 1; /* Cho phép input chiếm hết không gian trống */
+            margin-bottom: 0; /* Bỏ margin bottom mặc định */
+        }
+
+        .chat-input-area button {
+            width: auto; /* Button có chiều rộng tự động */
+            padding: 10px 20px; /* Tăng padding cho button gửi */
+            margin-bottom: 0; /* Bỏ margin bottom mặc định */
+            flex-shrink: 0; /* Ngăn button bị co lại */
+        }
+        /* --- END: Styles cho phần Chat --- */
+
+        .diagnosis-result {
+            text-align: center;
+            margin-top: 15px; /* Thêm khoảng cách trên */
+            padding: 10px;
+            border: 1px solid #eee; /* Border nhẹ hơn */
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .diagnosis-img {
+            max-width: 100%;
+            height: auto; /* Đảm bảo tỷ lệ ảnh */
+            border-radius: 8px; /* Bo góc nhẹ */
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Thêm bóng nhẹ cho ảnh */
+        }
+        .link {
+            text-align: center;
+            color: #388e3c;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-top: 15px; /* Thêm khoảng cách trên */
+        }
+
+        /* Styles cho phần Tính năng suất */
+        #productivity h3 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+        #productivity input[type="text"],
+        #productivity input[type="number"],
+        #productivity button {
+             /* Giữ nguyên style chung */
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+         #productivity button {
+            background-color: #66bb6a;
+            color: white;
+            border: none;
+            cursor: pointer;
+             transition: background-color 0.3s ease;
         }
         #productivity button:hover {
             background-color: #4caf50;
@@ -148,10 +213,35 @@
         #productivityResult {
             margin-top: 15px;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #eee; /* Border nhẹ hơn */
             border-radius: 8px;
             background-color: rgba(255, 255, 255, 0.7);
             text-align: center;
+        }
+
+        /* Media Queries cho thiết bị nhỏ hơn */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+                min-height: 90vh;
+                max-height: 95vh;
+            }
+            .message {
+                max-width: 90%;
+                padding: 8px 12px;
+                 border-radius: 15px;
+            }
+            .chatbox {
+                padding: 10px;
+                gap: 8px;
+            }
+             .chat-input-area {
+                 gap: 5px;
+             }
+             .chat-input-area button {
+                 padding: 10px 15px;
+             }
         }
     </style>
 </head>
@@ -207,8 +297,8 @@
 </div>
 
 <script>
-    const apiUrl = 'https://leafcarebot.onrender.com'; //
-    // const apiUrl = ' http://127.0.0.1:8000'
+    // const apiUrl = 'https://leafcarebot.onrender.com'; //
+    const apiUrl = ' http://127.0.0.1:8000'
 
     function showTab(tab) {
         document.getElementById('login').classList.add('hidden');
